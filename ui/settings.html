@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OctoPrint NavbarTemp Port</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #0f1319;
+      --surface: #161d27;
+      --surface-strong: #1e2633;
+      --surface-soft: #202c3d;
+      --outline: #33445e;
+      --text: #f5f7fb;
+      --muted: #b4c0d3;
+      --primary: #8dbdff;
+      --secondary: #ffd37f;
+      --success: #9fd9b8;
+      --shadow: 0 22px 54px rgba(0, 0, 0, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      color: var(--text);
+      background: transparent;
+      padding: 22px;
+    }
+
+    main {
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero,
+    .panel {
+      border-radius: 24px;
+      border: 1px solid color-mix(in srgb, var(--outline) 82%, transparent);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--surface-strong) 94%, transparent), var(--surface));
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 6px 0 0;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.02;
+    }
+
+    .hero__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero__chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid color-mix(in srgb, var(--outline) 78%, transparent);
+      background: color-mix(in srgb, var(--surface-soft) 72%, transparent);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .description {
+      margin: 0;
+      max-width: 62ch;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.95fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--surface-soft) 70%, transparent);
+      border: 1px solid color-mix(in srgb, var(--outline) 76%, transparent);
+    }
+
+    label span {
+      display: block;
+    }
+
+    .label-title {
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .label-copy {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid color-mix(in srgb, var(--outline) 82%, transparent);
+      background: rgba(10, 13, 18, 0.46);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 76%, white));
+      color: #102033;
+    }
+
+    button.secondary {
+      background: color-mix(in srgb, var(--surface-soft) 78%, transparent);
+      border: 1px solid color-mix(in srgb, var(--outline) 82%, transparent);
+      color: var(--text);
+    }
+
+    .preview-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 48px;
+      align-items: center;
+    }
+
+    .preview-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 11px;
+      background: color-mix(in srgb, var(--surface-soft) 74%, transparent);
+      border: 1px solid color-mix(in srgb, var(--outline) 82%, transparent);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--success) 18%, transparent);
+    }
+
+    .tip-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+      display: grid;
+      gap: 8px;
+    }
+
+    @media (max-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="hero__row">
+        <div>
+          <p class="eyebrow">OctoPrint compatibility test case</p>
+          <h1>NavbarTemp</h1>
+        </div>
+        <div class="hero__chip">Ported through WPrint 3D plugin APIs</div>
+      </div>
+      <p class="description">
+        This page uses the WPrint 3D OctoPrint compatibility helper to load plugin settings, save updates, invoke the snapshot action, and watch the last published plugin message/state.
+      </p>
+    </section>
+
+    <section class="grid">
+      <section class="panel">
+        <div>
+          <h2>Plugin settings</h2>
+          <p>These fields map directly to the original OctoPrint NavbarTemp options, but they persist through the WPrint 3D plugin settings API.</p>
+        </div>
+
+        <form class="form-grid" id="settings-form">
+          <div class="checkbox-grid">
+            <label class="checkbox">
+              <input type="checkbox" name="displayRaspiTemp" />
+              <span>
+                <span class="label-title">Display internal temperature</span>
+                <span class="label-copy">Show the SBC/SoC reading in the navbar strip.</span>
+              </span>
+            </label>
+
+            <label class="checkbox">
+              <input type="checkbox" name="useShortNames" />
+              <span>
+                <span class="label-title">Use short tool names</span>
+                <span class="label-copy">Render `E`, `E1`, and compact labels when room is tight.</span>
+              </span>
+            </label>
+
+            <label class="checkbox">
+              <input type="checkbox" name="makeMoreRoom" />
+              <span>
+                <span class="label-title">Make more room in navbar</span>
+                <span class="label-copy">Remove extra spacing around labels and values.</span>
+              </span>
+            </label>
+
+            <label class="checkbox">
+              <input type="checkbox" name="showFahrenheitAlso" />
+              <span>
+                <span class="label-title">Show Fahrenheit too</span>
+                <span class="label-copy">Append a Fahrenheit reading next to Celsius output.</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="soc_name">SoC name to display</label>
+            <input id="soc_name" type="text" name="soc_name" placeholder="SoC" />
+          </div>
+
+          <div class="field">
+            <label for="cmd_name">Custom command label</label>
+            <input id="cmd_name" type="text" name="cmd_name" placeholder="Hostname" />
+          </div>
+
+          <div class="field">
+            <label for="cmd">Custom command</label>
+            <input id="cmd" type="text" name="cmd" placeholder="hostname" />
+          </div>
+
+          <div class="actions">
+            <button type="submit">Save settings</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="panel">
+        <div>
+          <h2>Live navbar preview</h2>
+          <p>The preview below mirrors the last plugin message/state published by the snapshot action. It should track what the native navbar strip is showing.</p>
+        </div>
+
+        <div class="preview-strip" id="preview-strip"></div>
+        <div class="status">
+          <span class="status__dot"></span>
+          <span id="status-text">Loading plugin state…</span>
+        </div>
+
+      </aside>
+    </section>
+  </main>
+
+  <script type="module">
+    const params = new URLSearchParams(window.location.search);
+    const compatUrl = params.get("octoPrintCompatUrl") || "/backend/api/plugins/sdk/octoprint-compat.js";
+    await import(compatUrl);
+
+    const host = window.WPrint3DOctoPrintCompat.fromWindow();
+    const form = document.getElementById("settings-form");
+    const previewStrip = document.getElementById("preview-strip");
+    const statusText = document.getElementById("status-text");
+    let savedSettings = {};
+    let previewRequestToken = 0;
+
+    applyTheme(host.getTheme());
+
+    const settings = await host.getSettings();
+    savedSettings = { ...settings };
+    applySettings(settings);
+    await refreshSnapshot();
+
+    const stopWatching = host.watchState((state) => {
+      if (formMatchesSavedSettings()) {
+        renderState(state);
+      }
+    }, {
+      intervalMs: 10000,
+      immediate: false,
+      onError(error) {
+        statusText.textContent = error.message || "Unable to refresh plugin state.";
+      },
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const nextSettings = readSettings(form);
+      const saved = await host.saveSettings(nextSettings);
+
+      savedSettings = { ...saved };
+      applySettings(saved);
+      statusText.textContent = "Settings saved. Refreshing preview…";
+      await refreshSnapshot();
+    });
+
+    form.addEventListener("input", () => {
+      statusText.textContent = "Previewing draft changes…";
+      scheduleLivePreview();
+    });
+
+    window.addEventListener("beforeunload", () => {
+      stopWatching();
+    });
+
+    async function refreshSnapshot(options = {}) {
+      const response = await host.invokeAction("snapshot", {
+        previewOnly: Boolean(options.previewOnly),
+        settings: options.settings || undefined,
+      });
+
+      renderState(response.data || response);
+    }
+
+    const scheduleLivePreview = debounce(async () => {
+      const token = ++previewRequestToken;
+
+      try {
+        await refreshSnapshot({
+          previewOnly: true,
+          settings: readSettings(form),
+        });
+
+        if (token === previewRequestToken) {
+          statusText.textContent = formMatchesSavedSettings()
+            ? "Preview matches saved settings."
+            : "Previewing draft changes…";
+        }
+      } catch (error) {
+        if (token === previewRequestToken) {
+          statusText.textContent = error.message || "Unable to update preview.";
+        }
+      }
+    }, 250);
+
+    function renderState(state) {
+      const items = Array.isArray(state?.items) ? state.items : [];
+
+      previewStrip.innerHTML = items.map((item) => (
+        `<span class="preview-chip">${escapeHtml(item.text || item.label || "")}</span>`
+      )).join("");
+
+      if (!items.length) {
+        previewStrip.innerHTML = `<span class="preview-chip">No readings available yet.</span>`;
+      }
+
+      statusText.textContent = state?.updatedAt
+        ? `Last updated ${new Date(state.updatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+        : "Waiting for plugin messages…";
+    }
+
+    function applySettings(settings) {
+      for (const [key, value] of Object.entries(settings || {})) {
+        const field = form.elements.namedItem(key);
+
+        if (!field) {
+          continue;
+        }
+
+        if (field.type === "checkbox") {
+          field.checked = Boolean(value);
+          continue;
+        }
+
+        field.value = value ?? "";
+      }
+    }
+
+    function readSettings(formNode) {
+      return {
+        displayRaspiTemp: formNode.elements.namedItem("displayRaspiTemp").checked,
+        useShortNames: formNode.elements.namedItem("useShortNames").checked,
+        makeMoreRoom: formNode.elements.namedItem("makeMoreRoom").checked,
+        showFahrenheitAlso: formNode.elements.namedItem("showFahrenheitAlso").checked,
+        soc_name: formNode.elements.namedItem("soc_name").value,
+        cmd_name: formNode.elements.namedItem("cmd_name").value,
+        cmd: formNode.elements.namedItem("cmd").value,
+      };
+    }
+
+    function formMatchesSavedSettings() {
+      return JSON.stringify(readSettings(form)) === JSON.stringify(savedSettings || {});
+    }
+
+    function applyTheme(theme) {
+      const root = document.documentElement;
+
+      [
+        ["--primary", theme.primary],
+        ["--secondary", theme.secondary],
+        ["--surface", theme.surface],
+        ["--surface-strong", theme.elevation?.level2 || theme.surfaceVariant],
+        ["--surface-soft", theme.surfaceVariant],
+        ["--outline", theme.outlineVariant || theme.outline],
+        ["--text", theme.onSurface],
+        ["--muted", theme.onSurfaceVariant],
+      ].forEach(([name, value]) => {
+        if (value) {
+          root.style.setProperty(name, value);
+        }
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function debounce(callback, waitMs) {
+      let timeoutId = null;
+
+      return (...args) => {
+        window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => {
+          timeoutId = null;
+          callback(...args);
+        }, waitMs);
+      };
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "id": "octoprint.navbartemp-port",
+  "name": "OctoPrint NavbarTemp Port",
+  "version": "0.1.0",
+  "sdkVersion": 1,
+  "sdkRevision": 3,
+  "minCoreVersion": "0.0.0",
+  "description": "WPrint 3D port of OctoPrint-NavbarTemp with a native navbar strip and OctoPrint-style settings/state helpers.",
+  "author": "WPrint 3D",
+  "icon": "thermometer",
+  "runtime": {
+    "type": "php",
+    "entry": "plugin.php"
+  },
+  "permissions": [
+    "printer.read",
+    "host.metrics.read",
+    "ui.settings_tab",
+    "ui.navbar_widget"
+  ],
+  "settings": {
+    "defaults": {
+      "displayRaspiTemp": true,
+      "cmd": "",
+      "cmd_name": "",
+      "useShortNames": false,
+      "makeMoreRoom": false,
+      "soc_name": "SoC",
+      "showFahrenheitAlso": false
+    }
+  },
+  "actions": [
+    {
+      "id": "snapshot",
+      "label": "Refresh navbar snapshot",
+      "handler": "actions/snapshot.php"
+    }
+  ],
+  "assets": [
+    {
+      "path": "ui/settings.html"
+    }
+  ],
+  "uiExtensions": [
+    {
+      "id": "navbartemp-settings",
+      "surface": "settings_tab",
+      "mode": "custom_bundle",
+      "title": "NavbarTemp",
+      "bundle": {
+        "url": "asset://ui/settings.html"
+      }
+    },
+    {
+      "id": "navbartemp-navbar",
+      "surface": "navbar_widget",
+      "mode": "declarative",
+      "title": "NavbarTemp",
+      "schema": {
+        "component": "data_strip",
+        "dataActionId": "snapshot",
+        "pollIntervalMs": 10000,
+        "itemsPath": "items",
+        "gap": 4
+      }
+    }
+  ],
+  "signature": {
+    "algorithm": "none"
+  }
+}
