@@ -56,6 +56,7 @@
       "surface": "navbar_widget",
       "mode": "declarative",
       "title": "NavbarTemp",
+      "mobilePresentation": "gauges",
       "schema": {
         "component": "data_strip",
         "dataActionId": "snapshot",

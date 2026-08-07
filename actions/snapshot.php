@@ -26,10 +26,17 @@ if (($settings['displayRaspiTemp'] ?? true) === true) {
     $temperature = (new \App\Plugins\Support\SbcTemperatureReader())->read();
 
     if ($temperature !== null) {
+        $label = (string) ($settings['soc_name'] ?? 'SoC');
         $items[] = [
             'id' => 'soc',
             'icon' => 'chip',
-            'text' => format_label((string) ($settings['soc_name'] ?? 'SoC'), sprintf_temperature($temperature, $settings)),
+            'label' => $label,
+            'text' => format_label($label, sprintf_temperature($temperature, $settings)),
+            'displayValue' => sprintf_temperature($temperature, $settings),
+            'value' => $temperature,
+            'targetValue' => null,
+            'min' => 0,
+            'max' => 100,
         ];
     }
 }
@@ -46,10 +53,17 @@ if ($printerId) {
         }
 
         $target = normalize_temperature($extruder['target'] ?? null);
+        $label = tool_label($index, $settings);
         $items[] = [
             'id' => 'tool-'.$index,
             'icon' => 'printer-3d-nozzle',
             'text' => format_tool_temperature($index, $actual, $target, $settings),
+            'label' => $label,
+            'displayValue' => sprintf_temperature($actual, $settings),
+            'value' => $actual,
+            'targetValue' => $target,
+            'min' => 0,
+            'max' => $target !== null && $target > 0 ? max($target, $actual) : 300,
         ];
     }
 
@@ -57,10 +71,17 @@ if ($printerId) {
     $bedActual = normalize_temperature($bed['temperature'] ?? null);
 
     if ($bedActual !== null) {
+        $bedTarget = normalize_temperature($bed['target'] ?? null);
         $items[] = [
             'id' => 'bed',
             'icon' => 'radiator',
-            'text' => format_named_temperature('Bed', $bedActual, normalize_temperature($bed['target'] ?? null), $settings),
+            'label' => 'Bed',
+            'text' => format_named_temperature('Bed', $bedActual, $bedTarget, $settings),
+            'displayValue' => sprintf_temperature($bedActual, $settings),
+            'value' => $bedActual,
+            'targetValue' => $bedTarget,
+            'min' => 0,
+            'max' => $bedTarget !== null && $bedTarget > 0 ? max($bedTarget, $bedActual) : 120,
         ];
     }
 }
@@ -72,11 +93,22 @@ if ($customCommand !== '' && $customCommandName !== '') {
     $commandResult = read_custom_command($customCommand);
 
     if ($commandResult !== null && $commandResult !== '') {
-        $items[] = [
+        $customItem = [
             'id' => 'custom-command',
             'icon' => 'console',
+            'label' => $customCommandName,
             'text' => format_label($customCommandName, $commandResult),
+            'displayValue' => $commandResult,
+            'targetValue' => null,
         ];
+
+        if (is_numeric($commandResult)) {
+            $customItem['value'] = (float) $commandResult;
+            $customItem['min'] = 0;
+            $customItem['max'] = 100;
+        }
+
+        $items[] = $customItem;
     }
 }
 
@@ -117,10 +149,14 @@ function normalize_temperature(mixed $value): ?float
 
 function format_tool_temperature(int $index, float $actual, ?float $target, array $settings): string
 {
-    $useShortNames = (bool) ($settings['useShortNames'] ?? false);
-    $name = $useShortNames ? ($index === 0 ? 'E' : 'E'.$index) : ($index === 0 ? 'Tool' : 'Tool '.$index);
+    return format_named_temperature(tool_label($index, $settings), $actual, $target, $settings);
+}
 
-    return format_named_temperature($name, $actual, $target, $settings);
+function tool_label(int $index, array $settings): string
+{
+    $useShortNames = (bool) ($settings['useShortNames'] ?? false);
+
+    return $useShortNames ? ($index === 0 ? 'E' : 'E'.$index) : ($index === 0 ? 'Tool' : 'Tool '.$index);
 }
 
 function format_named_temperature(string $label, float $actual, ?float $target, array $settings): string

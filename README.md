@@ -4,7 +4,7 @@ This example ports the behavior of `OctoPrint-NavbarTemp` into WPrint 3D.
 
 It demonstrates:
 
-- a native `navbar_widget` rendered through the host `data_strip` component as an inline telemetry lane across the main navbar
+- a native `navbar_widget` rendered through the host `data_strip` component as an inline desktop telemetry lane and icon-only micro gauges inside the mobile app bar
 - a `custom_bundle` settings page that uses the host-served OctoPrint compatibility helper
 - persistent plugin settings through `/api/plugins/{id}/settings`
 - OctoPrint-style plugin message/state publishing through the `send_plugin_message` effect
@@ -68,6 +68,6 @@ Then:
 - watch the preview update live as you tweak the form
 - save settings when you want those changes persisted to the plugin and navbar state
 
-The native WPrint 3D navbar strip and the settings-page preview should show the same published plugin state. The settings page now uses host-backed draft snapshots for instant preview updates while editing, but only saved changes are pushed into the persistent plugin settings and live navbar state. In the host shell, the navbar widget is rendered as inline text-and-icon telemetry so OctoPrint-style temperature ports sit naturally between the app title and the user/menu actions instead of looking like detached settings chips.
+The native WPrint 3D navbar strip and the settings-page preview should show the same published plugin state. The settings page now uses host-backed draft snapshots for instant preview updates while editing, but only saved changes are pushed into the persistent plugin settings and live navbar state. In the host shell, the navbar widget is rendered as inline text-and-icon telemetry on desktop. Its `mobilePresentation: "gauges"` declaration keeps the same metrics inside the mobile app bar as icon-only micro gauges. Tapping a gauge reveals its actual/target values for five seconds before fading back to the simplified icon.
 
 For the packaged `.w3dp` release path, confirm that the installed plugin card shows `Unsigned` and does not show `Live source`; that proves you are running the packaged artifact instead of the development mount.
